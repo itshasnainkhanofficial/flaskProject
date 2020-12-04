@@ -10,9 +10,13 @@ def index():
 def contact():
     return render_template("contact.html")
 
+
+
 @app.route('/about')
 def about():
-    return render_template("about.html")
+    frompython = "hasnain from python file"
+    list = [1,3,4,5]
+    return render_template("about.html" , about = frompython , list = list)
 
 if __name__ == '__main__':
     #DEBUG is SET to TRUE. CHANGE FOR PROD
