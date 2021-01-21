@@ -1,4 +1,4 @@
-from flask import Flask , render_template , request , redirect , flash
+from flask import Flask , render_template , request , redirect , flash ,  url_for
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import bcrypt
@@ -9,7 +9,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
 
-class User(db.Model):
+class UserModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(200), nullable=False)
     useremail = db.Column(db.String(200), nullable=False)
@@ -29,14 +29,48 @@ def index():
 def contact():
     return render_template("contact.html")
 
+
+
+@app.route('/allusers')
+def allusers():
+    AllUsers = UserModel.query.order_by(UserModel.date_created).all()
+    return render_template("allUsers.html" ,  allusers = AllUsers)
+
+
+
+
+
+@app.route('/login')
+def login():
+    return render_template("login.html")
+
+@app.route('/loginUser' , methods=["GET", "POST"])
+def abc():
+    if request.method == "POST":
+
+        email = request.form['email']
+        password = request.form['pass']
+
+        user = UserModel.query.filter_by(useremail=email).first()
+
+        if not user :
+            flash("email not exists")
+            return redirect(url_for("login"))
+        
+        else :
+            if not bcrypt.checkpw(password.encode('utf-8'), user.userpassword):
+                flash("password did not matched")
+                return redirect(url_for("login"))
+
+            else :
+                flash("user exists")
+                return redirect(url_for("allusers"))
+
+
 @app.route('/register')
 def register():
     return render_template("registration.html")
 
-@app.route('/allusers')
-def allusers():
-    AllUsers = User.query.order_by(User.date_created).all()
-    return render_template("allUsers.html" ,  allusers = AllUsers)
 
 @app.route('/registerUser' , methods=["GET", "POST"])
 def registerUser():
@@ -47,13 +81,18 @@ def registerUser():
 
         hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-        register = User(username = name, useremail = email, userpassword = hashed)
+        user = UserModel.query.filter_by(useremail=email).first()
+        if user:
+            flash("User with this email already exists")
+            return redirect(url_for("register"))
+
+        register = UserModel(username = name, useremail = email, userpassword = hashed)
 
         try:
             db.session.add(register)
             db.session.commit()
             flash("You have been registered")
-            return redirect("/")
+            return redirect("/allusers")
         except Exception as e:
             print(e)
             return "Error occur during registration"

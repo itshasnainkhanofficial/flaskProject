@@ -1,20 +1,19 @@
 {% extends "layout.html" %}
 {% block content %}
 <!-- Page Header -->
-<header class="masthead" style="background-image: url('static/img/registerImage.jpg') ; margin-bottom: 0px;">
+<header class="masthead" style="background-image: url('static/img/registerImage.jpg') ; margin-bottom: 0;">
     <div class="overlay"></div>
     <div class="container">
         <div class="row">
             <div class="col-lg-8 col-md-10 mx-auto">
                 <div class="page-heading">
-                    <h1>Register</h1>
+                    <h1>Login</h1>
                     <span class="subheading">Have questions? I have answers.</span>
                 </div>
             </div>
         </div>
     </div>
 </header>
-
 {% with messages = get_flashed_messages() %}
 {% if messages %}
   {% for msg in messages %}
@@ -24,17 +23,10 @@
   {% endfor %}
 {% endif %}
 {% endwith %}
-
 <div class="card" style="border: 0px !important;">
     <article class="card-body mx-auto" style="max-width: 400px;">
-        <h1>Registration</h1>
-        <form action="/registerUser" method="POST">
-            <div class="form-group input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text"> <i class="fa fa-user"></i> </span>
-                </div>
-                <input name="name" class="form-control" placeholder="Full name" type="text">
-            </div> <!-- form-group -->
+        <h1>Login</h1>
+        <form action="/loginUser" method="POST">
             <div class="form-group input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text"> <i class="fa fa-envelope"></i> </span>
@@ -50,9 +42,9 @@
             </div> <!-- form-group -->
 
             <div class="form-group">
-                <button type="submit" class="btn btn-primary btn-block"> Create Account </button>
+                <button type="submit" class="btn btn-primary btn-block"> Login </button>
             </div> <!-- form-group -->
-            <p class="text-center">Have an account? <a href="/login">Log In</a> </p>
+            <p class="text-center">Have not an account? <a href="/register">Register</a> </p>
         </form>
     </article>
 </div> <!-- card. -->
