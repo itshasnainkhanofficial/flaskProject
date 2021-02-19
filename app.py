@@ -29,22 +29,18 @@ class EmpModel(db.Model):
 
 @app.route('/')
 def index():
-    return render_template("index.html")
-
-@app.route('/contact')
-def contact():
-    return render_template("contact.html")
+    return render_template("index.html" , active='index')
 
 
 
 @app.route('/allusers')
 def allusers():
     AllUsers = UserModel.query.order_by(UserModel.date_created).all()
-    return render_template("allUsers.html" ,  allusers = AllUsers)
+    return render_template("allUsers.html" ,  allusers = AllUsers , active='allusers')
 
 @app.route('/login')
 def login():
-    return render_template("login.html")
+    return render_template("login.html" , active='login')
 
 @app.route('/loginUser' , methods=["GET", "POST"])
 def abc():
@@ -65,13 +61,14 @@ def abc():
                 return redirect(url_for("login"))
 
             else :
-                flash("user exists")
-                return redirect(url_for("allusers"))
+                flash("welcome")
+                return redirect("/viewEmployees")
+
 
 
 @app.route('/register')
 def register():
-    return render_template("registration.html")
+    return render_template("registration.html" , active='register')
 
 
 @app.route('/registerUser' , methods=["GET", "POST"])
@@ -95,6 +92,7 @@ def registerUser():
             db.session.commit()
             flash("You have been registered")
             return redirect("/viewEmployees")
+
         except Exception as e:
             print(e)
             return "Error occur during registration"
@@ -107,19 +105,19 @@ def registerUser():
 def about():
     frompython = "hasnain from python file"
     list = [1,3,4,5]
-    return render_template("about.html" , about = frompython , list = list)
+    return render_template("about.html" , about = frompython , list = list , active = "about")
 
 
 @app.route('/manageEmployees')
 def manageEmp():
     AllEmps = EmpModel.query.order_by(EmpModel.emp_date_created).all()
-    return render_template("manageemp.html" ,  emps = AllEmps)
+    return render_template("manageemp.html" ,  emps = AllEmps , active = "manageEmployees")
 
 
 @app.route("/viewEmployees")
 def viewEmp():
     employees = EmpModel.query.order_by(EmpModel.emp_date_created).all()
-    return render_template("viewemp.html" ,  employees = employees)
+    return render_template("viewemp.html" ,  employees = employees , active = "viewEmployees")
 
 
 
@@ -150,7 +148,39 @@ def addEmployee():
         flash("add employee get hit")
         return redirect("/manageEmployees")
 
+@app.route("/delete/<int:id>")
+def delete(id):
+    emp = EmpModel.query.filter_by(id = id).first()
+    try:
+        db.session.delete(emp)
+        db.session.commit()
+        flash("You have deleted employee successfully !")
+        return redirect("/viewEmployees")
+    except Exception as e:
+            print(e)
+            return "Error occur during deleting employee"
+        
 
+
+@app.route("/updateemp" , methods=['POST'])
+def update():
+    if request.method == 'POST':
+
+        Empid = EmpModel.query.get(request.form.get('id'))
+
+        Empid.empname = request.form['empname']
+        Empid.empfname = request.form['empfname']
+        Empid.empnumber = request.form['empnumber']
+
+        try:
+            db.session.commit()
+            flash("You have updated employee successfully !")
+            return redirect("/viewEmployees")
+        except Exception as e:
+            print(e)
+            return "Error occur during updating employee"
+    else :
+        return redirect("/viewEmployees")
 
 
 if __name__ == '__main__':
