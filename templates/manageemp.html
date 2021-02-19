@@ -1,0 +1,182 @@
+{% extends "layout.html" %}
+{% block content %}
+
+
+<!-- Page Header -->
+<header class="masthead" style="background-image: url('static/img/registerImage.jpg') ; margin-bottom: 0px;">
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-8 col-md-10 mx-auto">
+                <div class="page-heading">
+                    <h1>Manage</h1>
+                    <span class="subheading">Manage Employees</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+{% for msg in messages %}
+
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <strong>{{msg}}</strong>
+  <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+
+{% endfor %}
+{% endif %}
+{% endwith %}
+<div class="d-flex justify-content-end p-3">
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#postAdd"><i
+      class="fa fa-plus-square pr-2"></i>Add Employee</button>
+</div>
+
+<div class="container-fluid">
+
+  <div class="row p-5">
+
+    <div class="col-12">
+      <table id="blogTable" class="table table-bordered">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">name</th>
+            <th scope="col">Fater Name</th>
+            <th scope="col">Contact</th>
+            <th scope="col">date created</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% if emps %}
+          {% for emp in emps %}
+          <tr>
+            <th scope="row">{{emp.id}}</th>
+            <td>{{emp.empname}}</td>
+            <td>{{emp.empfname}}</td>
+            <td>
+                {{emp.empnumber}}
+            </td>
+            <td>{{emp.emp_date_created.date()}}</td>
+            <td>
+              <a href="update/{{emp.id}}" class="btn btn-outline-primary btn-sm" data-toggle="modal"
+                data-target="#modaledit{{emp.id}}"> Update</a>
+              <a href="delete/{{emp.id}}" class="btn btn-outline-danger btn-sm">delete</a>
+            </td>
+          </tr>
+          <!-- update post -->
+          <div class="modal fade" id="modaledit{{emp.id}}" tabindex="-1" aria-labelledby="exampleModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="exampleModalLabel">Edit Employees</h5>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
+
+                  <div class="container-fluid">
+                    <div class="row p-3">
+                      <div class="col-lg-12">
+                        <div class="contact__form">
+                          <form action="/updateemp" method="POST">
+                            <div class="row">
+                              <div class="col-lg-12">
+                                <input type="hidden" name="id" value="{{emp.id}}">
+                                <input type="text" placeholder="empname" name="empname"
+                                  value="{{emp.empname}}">
+                              </div>
+                              <div class="col-lg-12">
+                                <input type="text" placeholder="fater name" name="empfname"
+                                  value="{{emp.empfname}}">
+                              </div>
+                              <div class="col-lg-12">
+                                <input type="text" placeholder="contact number" name="empnumber"
+                                  value="{{emp.empnumber}}">
+                              </div>
+                             
+                              
+                            </div>
+
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary">Update post</button>
+                </div>
+                </form>
+              </div>
+            </div>
+          </div>
+          {% endfor %}
+          {% else %}
+          <tr>
+            <td colspan="6" class="text-center">No employee available</td>
+          </tr>
+          {% endif %}
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Add post Modal -->
+<div class="modal fade" id="postAdd" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Add employee</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+
+        <div class="container-fluid">
+          <div class="row p-3">
+            <div class="col-lg-12">
+              <div class="contact__form">
+                <form action="/addemp" method="POST">
+                  <div class="row">
+                    <div class="col-lg-12 my-2">
+                      <input type="text" class="form-control" placeholder="empname" name="empname" required>
+                    </div>
+                    <div class="col-lg-12 my-2">
+                      <input type="text" class="form-control" placeholder="father name" name="empfname" required>
+                    </div>
+                    <div class="col-lg-12 my-2">
+                      <input type="text" class="form-control" placeholder="contact number" name="empnumber" required>
+                    </div>
+                    
+                  </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save Employee</button>
+      </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}

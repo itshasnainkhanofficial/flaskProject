@@ -15,11 +15,17 @@ class UserModel(db.Model):
     useremail = db.Column(db.String(200), nullable=False)
     userpassword = db.Column(db.String(900), nullable=False)
     date_created = db.Column(db.DateTime , default = datetime.utcnow)
-
     def __repr__(self):
         return  "<Task %r>" % self.id
 
-
+class EmpModel(db.Model):
+     id = db.Column(db.Integer, primary_key=True)
+     empname = db.Column(db.String(200), nullable=False)
+     empfname = db.Column(db.String(200), nullable=False)
+     empnumber = db.Column(db.Integer, nullable=False)
+     emp_date_created = db.Column(db.DateTime , default = datetime.utcnow)
+     def __repr__(self):
+        return  "<Task %r>" % self.id
 
 @app.route('/')
 def index():
@@ -35,10 +41,6 @@ def contact():
 def allusers():
     AllUsers = UserModel.query.order_by(UserModel.date_created).all()
     return render_template("allUsers.html" ,  allusers = AllUsers)
-
-
-
-
 
 @app.route('/login')
 def login():
@@ -92,7 +94,7 @@ def registerUser():
             db.session.add(register)
             db.session.commit()
             flash("You have been registered")
-            return redirect("/allusers")
+            return redirect("/viewEmployees")
         except Exception as e:
             print(e)
             return "Error occur during registration"
@@ -106,6 +108,50 @@ def about():
     frompython = "hasnain from python file"
     list = [1,3,4,5]
     return render_template("about.html" , about = frompython , list = list)
+
+
+@app.route('/manageEmployees')
+def manageEmp():
+    AllEmps = EmpModel.query.order_by(EmpModel.emp_date_created).all()
+    return render_template("manageemp.html" ,  emps = AllEmps)
+
+
+@app.route("/viewEmployees")
+def viewEmp():
+    employees = EmpModel.query.order_by(EmpModel.emp_date_created).all()
+    return render_template("viewemp.html" ,  employees = employees)
+
+
+
+@app.route("/addemp" ,  methods=["GET", "POST"])
+def addEmployee():
+    if request.method == "POST":
+        empname = request.form['empname']
+        empfname = request.form['empfname']
+        empnumber = request.form['empnumber']
+
+        if not empname and not empfname and not empnumber :
+            flash("please add employee details to add")
+            return render_template("manageemp.html")
+
+        addedEmp = EmpModel(empname = empname, empfname = empfname, empnumber = empnumber)
+
+        try:
+            db.session.add(addedEmp)
+            db.session.commit()
+            flash("You have added an employee")
+            return redirect("/viewEmployees")
+        except Exception as e:
+            print(e)
+            return "Error occur during adding employees"
+
+
+    else:
+        flash("add employee get hit")
+        return redirect("/manageEmployees")
+
+
+
 
 if __name__ == '__main__':
     app.secret_key = 'super secret key'
